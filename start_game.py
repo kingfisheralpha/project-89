@@ -62,7 +62,7 @@ _d['g_dir']=plib.Path(_d['main_dir'],'Game Files')
 
 _d['t_dir']=plib.Path(_d['g_dir'],'Textures')
 
-_d['icon_dir']=plib.Path(_d['main_dir'],'Icon images')
+_d['icon_dir']=plib.Path(_d['g_dir'],'Icon images')
 
 _d['unit_t_dir']=plib.Path(_d['t_dir'],'Unit textures')
 
