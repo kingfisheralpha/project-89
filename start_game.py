@@ -26,6 +26,8 @@ from pathfinding.finder.a_star import AStarFinder
 
 import pybresenham as pyb
 
+import random
+
 '''
 def calc_path0(grid):
         
@@ -54,120 +56,124 @@ def calc_path0(grid):
             
         q.put(a)
 '''
-_d={}
+class Add:
+    _d={}
 
-_d['main_dir']=plib.Path.cwd()
+    _d['main_dir']=plib.Path.cwd()
 
-_d['g_dir']=plib.Path(_d['main_dir'],'Game Files')
+    _d['g_dir']=plib.Path(_d['main_dir'],'Game Files')
 
-_d['t_dir']=plib.Path(_d['g_dir'],'Textures')
+    _d['t_dir']=plib.Path(_d['g_dir'],'Textures')
 
-_d['icon_dir']=plib.Path(_d['g_dir'],'Icon images')
+    _d['icon_dir']=plib.Path(_d['g_dir'],'Icon images')
 
-_d['unit_t_dir']=plib.Path(_d['t_dir'],'Unit textures')
+    _d['unit_t_dir']=plib.Path(_d['t_dir'],'Unit textures')
 
-_d['tile_t_dir']=plib.Path(_d['t_dir'],'Tile textures')
+    _d['tile_t_dir']=plib.Path(_d['t_dir'],'Tile textures')
 
-#_d['f_dir']=plib.Path(_d['g_dir'],'Factions')
+    #_d['f_dir']=plib.Path(_d['g_dir'],'Factions')
 
-_d['m_dir']=plib.Path(_d['t_dir'],'Maps')
+    _d['m_dir']=plib.Path(_d['t_dir'],'Maps')
 
 
-def visi_grid(width,height,r):
-    x0,y0=0,0
 
-    width=int(width)
-    height=int(height)
-    r=int(r)
+    @staticmethod
+    def visi_grid(width,height,r):
+        #script='visibility'
+        x0,y0=0,0
+
+        width=int(width)
+        height=int(height)
+        r=int(r)
+
+
+
+            
+
+
+        '''    
+        width=1
+        height=1
+
+
+
+        r=4
+        '''
+        
+
+
+        list1=[[0 for i in range((r * 2)+width)]for j in range((r * 2)+height)]
+
+
+        c=list(pyb.circle(x0,y0,r))
+
+        c1=[]
+
+        for i in c:
+            if i[0]>=0:
+                a=i[0]+height-1
+            else:
+                a=i[0]
+            if i[1]>=0:
+                b=i[1]+width-1
+            else:
+                b=i[1]
+
+            c1.append((a,b))
+
+        #c1.append((0,0))
+
+        for i in range(width-1):
+
+            
+            
+            
+            
+            c1.append((x0-r,y0+i))
+            c1.append((x0+r+height-1,y0+i))
+            
+            
+            
+
+            
+
+        for i in range(height-1):
+            
+            
+            
+
+
+            c1.append((x0+i,y0-r))
+            c1.append((x0+i,y0+r+width-1))
+            
+
+            
+            pass
+
+
+
+            
+
+
+
+           
+            
+
+        c2=list(pyb.translatePoints(c1,r,r))
 
 
 
         
+        c3=list(pyb.floodFill(c2,r,r))
+        #c3.append((r,r))
 
 
-    '''    
-    width=1
-    height=1
-
-
-
-    r=4
-    '''
-    
-
-
-    list1=[[0 for i in range((r * 2)+width)]for j in range((r * 2)+height)]
-
-
-    c=list(pyb.circle(x0,y0,r))
-
-    c1=[]
-
-    for i in c:
-        if i[0]>=0:
-            a=i[0]+height-1
-        else:
-            a=i[0]
-        if i[1]>=0:
-            b=i[1]+width-1
-        else:
-            b=i[1]
-
-        c1.append((a,b))
-
-    #c1.append((0,0))
-
-    for i in range(width-1):
-
-        
-        
-        
-        
-        c1.append((x0-r,y0+i))
-        c1.append((x0+r+height-1,y0+i))
-        
-        
-        
-
-        
-
-    for i in range(height-1):
-        
-        
-        
-
-
-        c1.append((x0+i,y0-r))
-        c1.append((x0+i,y0+r+width-1))
-        
-
-        
-        pass
+        for i in c3:
+            list1[i[0]][i[1]]=1
 
 
 
-        
-
-
-
-       
-        
-
-    c2=list(pyb.translatePoints(c1,r,r))
-
-
-
-    
-    c3=list(pyb.floodFill(c2,r,r))
-    #c3.append((r,r))
-
-
-    for i in c3:
-        list1[i[0]][i[1]]=1
-
-    print(c3)
-
-    return [r,c3]
+        return [r,c3]
 
 
 #visi_grid(2,2,0)
@@ -176,27 +182,27 @@ def visi_grid(width,height,r):
         
 
 
+    @staticmethod
+    def calc_path(data,q,grid):
 
-def calc_path(data,q,grid):
-
-    print('initiation')
-    units={}
-    for i in data:
-        finder = AStarFinder(diagonal_movement=DiagonalMovement.never)
-
-
-
-        table=Grid(matrix=grid)
+        print('initiation')
+        units={}
+        for i in data:
+            finder = AStarFinder(diagonal_movement=DiagonalMovement.never)
 
 
-        start=table.node(data[i][0][0],data[i][0][1])
-        end=table.node(data[i][1][0],data[i][1][1])
 
-        path, runs = finder.find_path(start, end, table)
-        #units.append([i,path])
-        units[i]=path
-        
-    q.put(units)
+            table=Grid(matrix=grid)
+
+
+            start=table.node(data[i][0][0],data[i][0][1])
+            end=table.node(data[i][1][0],data[i][1][1])
+
+            path, runs = finder.find_path(start, end, table)
+            #units.append([i,path])
+            units[i]=path
+            
+        q.put(units)
         
     
 class Game_select:
@@ -221,7 +227,7 @@ class Start_Game:
 
         self._map='map1.xml'
 
-        self.faction_list=[{'name':'Military',
+        self.faction_list=[{'name':'Military1',
                             'bg':'',
                             'icon_dir':'Military_textures',
                             'fg':'blue',
@@ -229,10 +235,33 @@ class Start_Game:
                             'Units':{'Infantry':{
                                      'icon':'infantry.xbm',
                                      'movable':'true',
-                                     'visi_radius':'2',
+                                     #'visi_radius':'4',
                                      'speed':'2',
                                      'auto_scripts':{'visibility':['1','1','4']},
+                                     'move_mod':'4'}}},
+
+                           
+                            {'name':'Items',
+                            'bg':'',
+                            'icon_dir':'Item_textures',
+                            'fg':'yellow',
+                            'visible':'',
+                            'Units':{'Item1':{
+                                     'icon':'item1.xbm',
+                                     'movable':'',
+                                     'visi_radius':'0',
+                                     'speed':'0',
+                                     #'auto_scripts':{'visibility':['1','1','4']},
+                                     'auto_scripts':{},
                                      'move_mod':'4'}}}]
+
+
+
+
+        
+
+
+        
         for i in self.faction_list:
             for j in i['Units']:
                
@@ -240,7 +269,7 @@ class Start_Game:
 
                 
 
-                img0=Image.open(plib.Path(_d['unit_t_dir'],i['icon_dir'],i['Units'][j]['icon']))
+                img0=Image.open(plib.Path(Add._d['unit_t_dir'],i['icon_dir'],i['Units'][j]['icon']))
 
                 
                 img=ImageTk.BitmapImage(image=img0,background=i['bg'],foreground=i['fg'])
@@ -253,7 +282,7 @@ class Start_Game:
 
 
 
-        self.comm_list=[['faction1','player',['Military']]]
+        self.comm_list=[['faction1','player',[self.faction_list[0]['name']]]]
 
 
         
@@ -272,10 +301,24 @@ class Start_Game:
 
         self.w.add_processor(Movement(self.w,self.control))
 
-        self.w.add_processor(Visibility(self.w,self.control))
+
+        
+
+        self.w.add_processor(Visibility(self.w,self.ui))
+        self.control.scripts['visibility']=self.w.get_processor(Visibility).process
+
+
+
+        
+
+
+        self.w.add_processor(Auto_Scripts(self.w,self.ui))
+
 
 
         self.w.add_processor(TickRate(self.w,self.ui))
+
+        
 
 
 
@@ -284,9 +327,16 @@ class Start_Game:
 
         #def add_unit(self,faction,unit_name,x0,y0)
 
-        self.control.add_unit('Military','Infantry',5,2)
+        self.control.add_unit('Military1','Infantry',10,2)
 
-        self.control.add_unit('Military','Infantry',5,2)
+        self.control.add_unit('Military1','Infantry',5,2)
+
+        for i in range(10):
+
+            self.control.add_unit('Items','Item1',random.randrange(10),random.randrange(10))
+        
+
+        
 
         
 
@@ -328,40 +378,134 @@ class Start_Game:
 
 
 
-iconpath=r'D:\User assets\Scripts\Python\Icon images\\'
+#iconpath=r'D:\User assets\Scripts\Python\Icon images\\'
 
 class Auto_Scripts(esper.Processor):
-    def __init__(self,world):
+    def __init__(self,world,ent):
         self.w=world
+
+        self.control=self.w.component_for_entity(ent,Game_Manager)
+
+        self.c=self.control.c
 
     def process(self):
 
-        a=self.w.get_component(Unit)
-        for i in a:
+        a=self.w.get_component(Player)[0][1]
+
+        a.visi_list_old.clear()
+        a.visi_list_old.update(a.visi_list)
+        
+        
+        a.visi_list.clear()
+
+        
+        for i in a.factions:
+            u_list=self.w.component_for_entity(self.control.factions[i],Faction).stats['unit_list']
+            for j in u_list:
+                unit=self.w.component_for_entity(j,Unit)
+                auto_scripts=unit.stats['auto_scripts']
+                for i in auto_scripts:
+                    
+                    self.control.scripts[i](a,unit,*auto_scripts[i])
+                    pass
             pass
+
+        #
+        list1=set(a.visi_list.keys())
+        list2=set(a.visi_list_old.keys())
+
+        #reveal
+
+        list3=list1.difference(list2)
+
+
+        #hide
+
+        list4=list2.difference(list1)
+
+        for i in list3:
+            _unit=self.w.component_for_entity(i,Unit)
+            _icon=_unit.stats['icon']
+            self.c.itemconfig(_icon,state=NORMAL)
+
+        for i in list4:
+            _unit=self.w.component_for_entity(i,Unit)
+            _icon=_unit.stats['icon']
+            self.c.itemconfig(_icon,state=HIDDEN)
+
+        
+        
+
+        
 
         pass
 
 class Visibility(esper.Processor):
-    def __init__(self,world,control):
+    def __init__(self,world,ui):
         self.w=world
-        
+
+        control=self.w.component_for_entity(ui,Game_Manager)
 
         self.factions=control.factions
+
+        self.c=control.c
+        
+        
+
+        #self.factions=control.factions
 
 
 
         self.m_grid=control.m_grid
 
-    def process1(self):
+
+    #add faction variable below    
+
+    def process(self,controller,unit,r,visi_grid):
     
-        a=self.w.get_components(Player)
-        for i in a:
-            pass
-        pass
+        
+
+        x0,y0=unit.stats['pos']
+
+        list1=[]
+
+        for i in visi_grid:
+            x=x0-r+i[0]
+            y=y0-r+i[1]
+            if 0<=x<len(self.m_grid[0]) and 0<=y<len(self.m_grid):
+                list1.append((x,y))
+        list2=controller.visi_list
+        
+        #list2.clear()
+        for i in list1:
+            list3=(i[0],i[1])
+            for j in self.m_grid[list3[1]][list3[0]]:
+                
+
+                #
+                _unit=self.w.component_for_entity(j,Unit)
+                _tags=self.c.gettags(_unit.stats['icon'])
+                _faction=_tags[1]
+
+                if _faction not in controller.factions:
+
+                
+                    if j not in controller.visi_list:
+                        list2[j]=set()
+
+                    
+                        
+                    list2[j].add(list3)
+
+    
+        
+
+        
+        print('unit list',controller.visi_list)
+            
 
 
-    def process(self):
+    '''def process(self):
         a=self.w.get_component(Unit)
         for i in a:
             a1=i[1]
@@ -379,7 +523,7 @@ class Visibility(esper.Processor):
                     list1.append((x,y))
             for i in list1:
                 for i in self.m_grid[i[1]][i[0]]:
-                    print('unit discovered',i)
+                    print('unit discovered',i)'''
                 
                 
                 
@@ -400,13 +544,22 @@ class TickRate(esper.Processor):
         self.root.after(self.tickrate,self.process)
 
     def process(self):
+
+        t0=time.time()
+        
         self.w.get_processor(Movement).process()
 
-        #self.w.get_processor(Visibility).process()
+        self.w.get_processor(Auto_Scripts).process()
+
+        t1=time.time()
+
+        t=self.tickrate-(int((t1-t0)*1000))
+
+        print('time passed',t)
 
 
         
-        self.root.after(self.tickrate,self.process)
+        self.root.after(t,self.process)
 
 
 class Movement(esper.Processor):
@@ -535,7 +688,7 @@ class Movement(esper.Processor):
     def calc(self,ent,data):
         q=self.queues[ent]
         if q[0]==True:
-            p=mp.Process(target=calc_path,args=(data,q[1],self.grid,))
+            p=mp.Process(target=Add.calc_path,args=(data,q[1],self.grid,))
             p.start()
             q[0]=False
 
@@ -690,9 +843,13 @@ class Player:
         self.c.create_rectangle(0,0,50,50,state=HIDDEN,tags=('selectbox',))
         self.c.tag_raise('selectbox')
 
-        self.factions=[]
+        self.factions=list()
 
-        self.selection=[]
+        self.selection=list()
+
+        self.visi_list=dict()
+
+        self.visi_list_old=dict()
 
 
         #self.c.config('selectbox',state='hidden')
@@ -936,6 +1093,10 @@ class Unit:
         speed=float(f.stats['units'][unit_name]['speed'])
         movable=bool(f.stats['units'][unit_name]['movable'])
 
+        auto_scripts=f.stats['units'][unit_name]['auto_scripts']
+
+        print('scripts',auto_scripts)
+
         if f.stats['visible']==True:
             visible=NORMAL
         else:
@@ -1003,6 +1164,12 @@ class Unit:
                                        fill='#00ff00',
                                        tags='healthbar')
 
+        self.stats['auto_scripts']={}
+
+        for i in auto_scripts:
+            self.stats['auto_scripts'][i]= g_m.script_init[i](*auto_scripts[i])
+
+
 
         f.stats['unit_list'].append(ent)
 
@@ -1027,9 +1194,9 @@ class Unit:
 
         self.stats['movable']=movable
 
-        self.stats['visi_radius']=int(f.stats['units'][unit_name]['visi_radius'])
+        #self.stats['visi_radius']=int(f.stats['units'][unit_name]['visi_radius'])
 
-        self.stats['visi_grid']=visi_grid(1,1,self.stats['visi_radius'])
+        #self.stats['visi_grid']=visi_grid(1,1,self.stats['visi_radius'])
         
 
         
@@ -1052,7 +1219,9 @@ class Game_Manager:
 
         self.add_map(_map)
 
-        self.scripts={'visibility':visi_grid}
+        self.script_init={'visibility':Add.visi_grid}
+
+        self.scripts={}
         
 
 
@@ -1101,7 +1270,7 @@ class Game_Manager:
 
         print('map initiated')
 
-        c=et.parse(plib.Path(_d['m_dir'],_map))
+        c=et.parse(plib.Path(Add._d['m_dir'],_map))
 
         root=c.getroot()
 
@@ -1172,7 +1341,7 @@ class Game_Manager:
 
         for i in text_dict:
             a1=text_dict[i]['bitmap']
-            images1[i]=Image.open(plib.Path(_d['tile_t_dir'],attribs['path'],a1))
+            images1[i]=Image.open(plib.Path(Add._d['tile_t_dir'],attribs['path'],a1))
 
         #print('images',images1)
 
